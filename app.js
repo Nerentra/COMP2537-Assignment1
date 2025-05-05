@@ -92,6 +92,13 @@ app.post("/signupSubmit", async (req, res) => {
         res.render("signupSubmit", { errorText: validationResult.error });
         return;
     }
+    const user = await mongodbDatabase.collection("assignment1users").findOne({
+        email,
+    });
+    if (user !== null) {
+        res.render("signupSubmit", { errorText: "User already exists with that email." });
+        return;
+    }
     const passwordHash = await bcrypt.hash(req.body.password, saltRounds);
     mongodbDatabase
         .collection("assignment1users")
