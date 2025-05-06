@@ -52,6 +52,11 @@ const mongoStore = MongoStore.create({
     },
 });
 
+function loginUser(req, name) {
+    req.session.authenticated = true;
+    req.session.name = name;
+}
+
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
@@ -108,6 +113,7 @@ app.post("/signupSubmit", async (req, res) => {
             passwordHash,
         })
         .then(() => {
+            loginUser(req, name);
             res.redirect("/members");
         })
         .catch((err) => {
@@ -146,8 +152,7 @@ app.post("/loginSubmit", async (req, res) => {
         res.render("loginSubmit", { errorText: "Incorrect password." });
         return;
     }
-    req.session.authenticated = true;
-    req.session.name = user.name;
+    loginUser(req, user.name);
     res.redirect("/members");
 })
 
